@@ -1,7 +1,7 @@
 Title: Health Checks for ML Model Deployments
 Date: 2023-01-15 22:00
 Category: Blog
-Slug: policies-for-ml-models
+Slug: health-checks-for-ml-model-deployments
 Authors: Brian Schmidt
 Summary: Deploying machine learning models in RESTful services is a common way to make the model available for use within a software system. RESTful services are the most common type of service deployed, since they are very simple to build, have wide compatibility, and have lots of tooling available for them. In order to monitor the availability of the service, RESTful APIs often provide health check endpoints which make it easy for an outside system to verify that the service is up and running. A healthcheck endpoint is a simple endpoint that can be called by a process manager to assertain whether the application is running correctly. In this blog post we'll be working with Kubernetes so we'll focus on the healthchecks supported by Kubernetes.
 # Health Checks for ML Model Deployments
