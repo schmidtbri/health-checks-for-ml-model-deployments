@@ -57,7 +57,7 @@ test-reports: clean-pyc clean-test ## Run unit test suite with reporting
 	mkdir ./reports/unit_tests
 	mkdir ./reports/coverage
 	mkdir ./reports/badge
-	-python -m coverage run --source data_enrichment -m pytest --verbose --color=yes --html=./reports/unit_tests/report.html --junitxml=./reports/unit_tests/report.xml $(TEST_PATH)
+	-python -m coverage run --source credit_risk_model -m pytest --verbose --color=yes --html=./reports/unit_tests/report.html --junitxml=./reports/unit_tests/report.xml $(TEST_PATH)
 	-coverage html -d ./reports/coverage
 	-coverage-badge -o ./reports/badge/coverage.svg
 	rm -rf .coverage
@@ -71,15 +71,15 @@ clean-test:	## Remove test artifacts
 .PHONY: clean-test
 
 check-codestyle:  ## checks the style of the code against PEP8
-	pycodestyle data_enrichment --max-line-length=120
+	pycodestyle credit_risk_model --max-line-length=120
 .PHONY: check-codestyle
 
 check-docstyle:  ## checks the style of the docstrings against PEP257
-	pydocstyle data_enrichment
+	pydocstyle credit_risk_model
 .PHONY: check-docstyle
 
 check-security:  ## checks for common security vulnerabilities
-	bandit -r data_enrichment
+	bandit -r credit_risk_model
 .PHONY: check-security
 
 check-dependencies:  ## checks for security vulnerabilities in dependencies
@@ -87,11 +87,11 @@ check-dependencies:  ## checks for security vulnerabilities in dependencies
 .PHONY: check-dependencies
 
 check-codemetrics:  ## calculate code metrics of the package
-	radon cc data_enrichment
+	radon cc credit_risk_model
 .PHONY: check-codemetrics
 
 check-pytype:  ## perform static code analysis
-	pytype data_enrichment
+	pytype credit_risk_model
 .PHONY: check-pytype
 
 convert-post:  ## Convert the notebook into Markdown file
@@ -101,5 +101,5 @@ convert-post:  ## Convert the notebook into Markdown file
 build-image:  ## Build docker image
 	export BUILD_DATE=`date -u +'%Y-%m-%dT%H:%M:%SZ'` && \
 	docker build --build-arg BUILD_DATE \
-		-t insurance_charges_model_service:latest .
+		-t credit_risk_model_service:latest .
 .PHONY: build-image
