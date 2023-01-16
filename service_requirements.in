@@ -1,0 +1,4 @@
+ml_base>=0.2.0
+rest_model_service>=0.4.1
+pandas
+lightgbm

@@ -1,0 +1,563 @@
+components:
+  schemas:
+    CreditRisk:
+      description: Indicates if loan is risky.
+      enum:
+      - safe
+      - risky
+      title: CreditRisk
+      type: string
+    CreditRiskModelInput:
+      description: Inputs for predicting credit risk.
+      properties:
+        annual_income:
+          description: The self-reported annual income provided by the borrower during
+            registration.
+          maximum: 273000.0
+          minimum: 1896.0
+          title: Annual Income
+          type: integer
+        collections_in_last_12_months:
+          description: Number of collections in 12 months excluding medical collections.
+          maximum: 20.0
+          minimum: 0.0
+          title: Collections In Last 12 Months
+          type: integer
+        debt_to_income_ratio:
+          description: "A ratio calculated using the borrower\u2019s total monthly\
+            \ debt payments on the total debt obligations, excluding mortgage and\
+            \ the requested LC loan, divided by the borrower\u2019s self-reported\
+            \ monthly income."
+          maximum: 42.64
+          minimum: 0.0
+          title: Debt To Income Ratio
+          type: number
+        delinquencies_in_last_2_years:
+          description: The number of 30+ days past-due incidences of delinquency in
+            the borrower's credit file for the past 2 years.
+          maximum: 39.0
+          minimum: 0.0
+          title: Delinquencies In Last 2 Years
+          type: integer
+        derogatory_public_record_count:
+          description: Number of derogatory public records.
+          maximum: 86.0
+          minimum: 0.0
+          title: Derogatory Public Record Count
+          type: integer
+        employment_length:
+          allOf:
+          - $ref: '#/components/schemas/EmploymentLength'
+          description: Employment length in years.
+        home_ownership:
+          allOf:
+          - $ref: '#/components/schemas/HomeOwnership'
+          description: The home ownership status provided by the borrower during registration.
+        interest_rate:
+          description: Interest rate on the loan.
+          maximum: 28.99
+          minimum: 5.32
+          title: Interest Rate
+          type: number
+        last_payment_amount:
+          description: Last total payment amount received.
+          maximum: 36475.59
+          minimum: 0.0
+          title: Last Payment Amount
+          type: number
+        loan_amount:
+          description: The listed amount of the loan applied for by the borrower.
+          maximum: 35000.0
+          minimum: 500.0
+          title: Loan Amount
+          type: integer
+        loan_purpose:
+          allOf:
+          - $ref: '#/components/schemas/LoanPurpose'
+          description: A category provided by the borrower for the loan request.
+        number_of_delinquent_accounts:
+          description: The number of accounts on which the borrower is now delinquent.
+          maximum: 6.0
+          minimum: 0.0
+          title: Number Of Delinquent Accounts
+          type: integer
+        revolving_line_utilization_rate:
+          description: Revolving line utilization rate, or the amount of credit the
+            borrower is using relative to all available revolving credit.
+          maximum: 892.3
+          minimum: 0.0
+          title: Revolving Line Utilization Rate
+          type: number
+        term:
+          allOf:
+          - $ref: '#/components/schemas/Term'
+          description: The number of payments on the loan. Values are in months and
+            can be either 36 or 60.
+        total_payments_to_date:
+          description: Payments received to date for portion of total amount funded
+            by investors.
+          maximum: 57777.58
+          minimum: 0.0
+          title: Total Payments To Date
+          type: number
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatus'
+          description: Indicates if income was verified.
+      required:
+      - annual_income
+      - collections_in_last_12_months
+      - delinquencies_in_last_2_years
+      - debt_to_income_ratio
+      - employment_length
+      - home_ownership
+      - number_of_delinquent_accounts
+      - interest_rate
+      - last_payment_amount
+      - loan_amount
+      - derogatory_public_record_count
+      - loan_purpose
+      - revolving_line_utilization_rate
+      - term
+      - total_payments_to_date
+      - verification_status
+      title: CreditRiskModelInput
+      type: object
+    CreditRiskModelOutput:
+      properties:
+        credit_risk:
+          allOf:
+          - $ref: '#/components/schemas/CreditRisk'
+          description: Whether or not the loan is risky.
+      required:
+      - credit_risk
+      title: CreditRiskModelOutput
+      type: object
+    EmploymentLength:
+      description: Employment length in years.
+      enum:
+      - < 1 year
+      - 1 year
+      - 2 years
+      - 3 years
+      - 4 years
+      - 5 years
+      - 6 years
+      - 7 years
+      - 8 years
+      - 9 years
+      - 10+ years
+      title: EmploymentLength
+      type: string
+    Error:
+      description: Error details.
+      properties:
+        messages:
+          description: List of error messages.
+          items:
+            type: string
+          title: Messages
+          type: array
+        type:
+          description: The type of error.
+          title: Type
+          type: string
+      required:
+      - type
+      - messages
+      title: Error
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    HealthStatus:
+      description: Health status of the service.
+      enum:
+      - HEALTHY
+      - NOT_HEALTHY
+      - UNKNOWN
+      title: HealthStatus
+      type: string
+    HealthStatusResponse:
+      description: Health status response.
+      properties:
+        health_status:
+          allOf:
+          - $ref: '#/components/schemas/HealthStatus'
+          description: Health status of the service.
+      required:
+      - health_status
+      title: HealthStatusResponse
+      type: object
+    HomeOwnership:
+      description: The home ownership status provided by the borrower during registration.
+      enum:
+      - MORTGAGE
+      - RENT
+      - OWN
+      title: HomeOwnership
+      type: string
+    LoanPurpose:
+      description: A category provided by the borrower for the loan request.
+      enum:
+      - debt_consolidation
+      - credit_card
+      - home_improvement
+      - other
+      - major_purchase
+      - small_business
+      - car
+      - medical
+      - moving
+      - vacation
+      - wedding
+      - house
+      - renewable_energy
+      - educational
+      title: LoanPurpose
+      type: string
+    ModelDetails:
+      description: Metadata of a model.
+      properties:
+        description:
+          description: The description of the model.
+          title: Description
+          type: string
+        display_name:
+          description: The display name of the model.
+          title: Display Name
+          type: string
+        qualified_name:
+          description: The qualified name of the model.
+          title: Qualified Name
+          type: string
+        version:
+          description: The version of the model.
+          title: Version
+          type: string
+      required:
+      - display_name
+      - qualified_name
+      - description
+      - version
+      title: ModelDetails
+      type: object
+    ModelDetailsCollection:
+      description: Collection of model details.
+      properties:
+        models:
+          description: Collection of model details.
+          items:
+            $ref: '#/components/schemas/ModelDetails'
+          title: Models
+          type: array
+      required:
+      - models
+      title: ModelDetailsCollection
+      type: object
+    ModelMetadata:
+      description: Metadata of a model, includes all information in ModelDetails plus
+        input and output schemas of the model.
+      properties:
+        description:
+          description: The description of the model.
+          title: Description
+          type: string
+        display_name:
+          description: The display name of the model.
+          title: Display Name
+          type: string
+        input_schema:
+          description: Input schema of a model, as a JSON Schema object.
+          title: Input Schema
+          type: object
+        output_schema:
+          description: Output schema of a model, as a JSON Schema object.
+          title: Output Schema
+          type: object
+        qualified_name:
+          description: The qualified name of the model.
+          title: Qualified Name
+          type: string
+        version:
+          description: The version of the model.
+          title: Version
+          type: string
+      required:
+      - display_name
+      - qualified_name
+      - description
+      - version
+      - input_schema
+      - output_schema
+      title: ModelMetadata
+      type: object
+    ReadinessStatus:
+      description: Readiness status of the service.
+      enum:
+      - ACCEPTING_TRAFFIC
+      - REFUSING_TRAFFIC
+      - UNKNOWN
+      title: ReadinessStatus
+      type: string
+    ReadinessStatusResponse:
+      description: Readiness status response.
+      properties:
+        readiness_status:
+          allOf:
+          - $ref: '#/components/schemas/ReadinessStatus'
+          description: Readiness status of the service.
+      required:
+      - readiness_status
+      title: ReadinessStatusResponse
+      type: object
+    StartupStatus:
+      description: Startup status of the service.
+      enum:
+      - STARTED
+      - NOT_STARTED
+      - UNKNOWN
+      title: StartupStatus
+      type: string
+    StartupStatusResponse:
+      description: Startup status response.
+      properties:
+        startup_status:
+          allOf:
+          - $ref: '#/components/schemas/StartupStatus'
+          description: Startup status of the service.
+      required:
+      - startup_status
+      title: StartupStatusResponse
+      type: object
+    Term:
+      description: The number of payments on the loan.
+      enum:
+      - ' 36 months'
+      - ' 60 months'
+      title: Term
+      type: string
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    VerificationStatus:
+      description: Indicates if income was verified.
+      enum:
+      - Source Verified
+      - Verified
+      - Not Verified
+      title: VerificationStatus
+      type: string
+info:
+  description: Service hosting the Credit Risk Model.
+  title: Credit Risk Model Service
+  version: 0.1.0
+openapi: 3.0.2
+paths:
+  /:
+    get:
+      description: Root of API, redirects to the /docs endpoint.
+      operationId: get_root__get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Get Root
+  /api/health:
+    get:
+      description: 'Check on service health.
+
+
+        Indicates whether the service process is running. This endpoint will return
+        a 200 status once the service
+
+        has started.'
+      operationId: health_check_api_health_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusResponse'
+          description: Successful Response
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatusResponse'
+          description: Service Unavailable
+      summary: Health Check
+  /api/health/ready:
+    get:
+      description: 'Check on service readiness.
+
+
+        Indicates whether the service is ready to respond to requests. This endpoint
+        will return a 200 status only if
+
+        all the models and decorators have finished being instantiated without errors.
+        Once the models and decorators
+
+        are loaded, the readiness check will always return a ACCEPTING_TRAFFIC state.'
+      operationId: readiness_check_api_health_ready_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessStatusResponse'
+          description: Successful Response
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessStatusResponse'
+          description: Service Unavailable
+      summary: Readiness Check
+  /api/health/startup:
+    get:
+      description: 'Check on service startup.
+
+
+        Indicates whether the service is started. This endpoint will return a 200
+        status only if all the models
+
+        and decorators have finished being instantiated without errors.'
+      operationId: startup_check_api_health_startup_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartupStatusResponse'
+          description: Successful Response
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartupStatusResponse'
+          description: Service Unavailable
+      summary: Startup Check
+  /api/models:
+    get:
+      description: 'List of models available.
+
+
+        This endpoint returns details about all the models currently loaded in the
+        service, however not all models
+
+        necessarily have an endpoint created for them.'
+      operationId: get_models_api_models_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelDetailsCollection'
+          description: Successful Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal Server Error
+      summary: Get Models
+  /api/models/credit_risk_model/prediction:
+    post:
+      description: Model for predicting credit risk of loans.
+      operationId: PredictionController_api_models_credit_risk_model_prediction_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditRiskModelInput'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditRiskModelOutput'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal Server Error
+      summary: Predictioncontroller
+  /api/models/{model_qualified_name}/metadata:
+    get:
+      description: 'Return metadata about a single model.
+
+
+        This endpoint returns metadata about any of the models currently loaded in
+        the service, however not all models
+
+        necessarily have an endpoint created for them.'
+      operationId: get_model_metadata_api_models__model_qualified_name__metadata_get
+      parameters:
+      - in: path
+        name: model_qualified_name
+        required: true
+        schema:
+          title: Model Qualified Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelMetadata'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal Server Error
+      summary: Get Model Metadata

@@ -1,0 +1,119 @@
+# this ConfigMap will be loaded as a YAML file by the credit-risk-model Pods
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-service-configuration
+data:
+  rest_config: |-
+    service_title: Credit Risk Model Service
+    description: "Service hosting the Credit Risk Model."
+    version: "0.1.0"
+    models:
+      - qualified_name: credit_risk_model
+        class_path: credit_risk_model.prediction.model.CreditRiskModel
+        create_endpoint: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: credit-risk-model-deployment
+  namespace: model-services
+  labels:
+    app: credit-risk-model
+    app.kubernetes.io/name: credit-risk-model
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/component: model-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: credit-risk-model
+  template:
+    metadata:
+      labels:
+        app: credit-risk-model
+    spec:
+      containers:
+        - name: credit-risk-model
+          image: docker.io/library/credit_risk_model_service:0.1.0
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          imagePullPolicy: Never
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            runAsNonRoot: true
+            readOnlyRootFilesystem:  true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 5
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /api/health/ready
+              port: 8000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 5
+            successThreshold: 1
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /api/health/startup
+              port: 8000
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 5
+            successThreshold: 1
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "500Mi"
+            limits:
+              cpu: "200m"
+              memory: "500Mi"
+          env:
+            - name: REST_CONFIG
+              value: ./configuration/rest_config.yaml
+          volumeMounts:
+            - name: config-volume
+              mountPath: /service/configuration
+      volumes:
+        - name: config-volume
+          configMap:
+            name: model-service-configuration
+            items:
+              - key: rest_config
+                path: rest_config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: credit-risk-model-service
+  labels:
+    app.kubernetes.io/name: credit-risk-model
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/component: model-service
+spec:
+  type: NodePort
+  selector:
+    app: credit-risk-model
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000

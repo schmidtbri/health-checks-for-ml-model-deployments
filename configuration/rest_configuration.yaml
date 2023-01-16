@@ -1,0 +1,7 @@
+service_title: Credit Risk Model Service
+description: "Service hosting the Credit Risk Model."
+version: "0.1.0"
+models:
+  - qualified_name: credit_risk_model
+    class_path: credit_risk_model.prediction.model.CreditRiskModel
+    create_endpoint: true

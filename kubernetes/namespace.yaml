@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: model-services
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: model-services-resource-quota
+  namespace: model-services
+spec:
+  hard:
+    limits.cpu: "4"
+    limits.memory: 4Gi
+    requests.cpu: "2"
+    requests.memory: 2Gi
