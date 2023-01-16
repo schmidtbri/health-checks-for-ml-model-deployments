@@ -10,6 +10,8 @@ In a [previous blog post](https://www.tekhnoal.com/rest-model-service.html) we s
 
 This blog post was written in a Jupyter notebook, some of the code and commands found in it reflect this.
 
+All of the code for this blog post is in [this github repository](https://github.com/schmidtbri/health-checks-for-ml-model-deployments).
+
 ## Introduction
 
 Deploying machine learning models in RESTful services is a common way to make the model available for use within a software system. In general, RESTful services are the most common type of service deployed, since they are simple to build, have wide compatibility, and have lots of tooling available for them. In order to monitor the availability of the service, RESTful APIs often provide health check endpoints which make it easy for an outside system to verify that the service is up and running. A health check endpoint is a simple endpoint that can be called by a process manager to ascertain whether the application is running correctly. In this blog post we'll be working with Kubernetes so we'll focus on the health checks supported by Kubernetes. 
