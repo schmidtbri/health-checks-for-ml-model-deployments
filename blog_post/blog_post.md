@@ -3,24 +3,24 @@ Date: 2023-01-15 22:00
 Category: Blog
 Slug: health-checks-for-ml-model-deployments
 Authors: Brian Schmidt
-Summary: Deploying machine learning models in RESTful services is a common way to make the model available for use within a software system. RESTful services are the most common type of service deployed, since they are very simple to build, have wide compatibility, and have lots of tooling available for them. In order to monitor the availability of the service, RESTful APIs often provide health check endpoints which make it easy for an outside system to verify that the service is up and running. A healthcheck endpoint is a simple endpoint that can be called by a process manager to assertain whether the application is running correctly. In this blog post we'll be working with Kubernetes so we'll focus on the healthchecks supported by Kubernetes.
+Summary: Deploying machine learning models in RESTful services is a common way to make the model available for use within a software system. RESTful services are the most common type of service deployed, since they are very simple to build, have wide compatibility, and have lots of tooling available for them. In order to monitor the availability of the service, RESTful APIs often provide health check endpoints which make it easy for an outside system to verify that the service is up and running. A health check endpoint is a simple endpoint that can be called by a process manager to ascertain whether the application is running correctly. In this blog post we'll be working with Kubernetes so we'll focus on the health checks supported by Kubernetes.
 # Health Checks for ML Model Deployments
 
-In a [previous blog post](https://www.tekhnoal.com/rest-model-service.html) we showed how to create a RESTful model service for a machine learning model. In this blog post, we'll extend the model service API by adding healthchecks to it.
+In a [previous blog post](https://www.tekhnoal.com/rest-model-service.html) we showed how to create a RESTful model service for a machine learning model. In this blog post, we'll extend the model service API by adding health checks to it.
 
 This blog post was written in a Jupyter notebook, some of the code and commands found in it reflect this.
 
 ## Introduction
 
-Deploying machine learning models in RESTful services is a common way to make the model available for use within a software system. In general, RESTful services are the most common type of service deployed, since they are simple to build, have wide compatibility, and have lots of tooling available for them. In order to monitor the availability of the service, RESTful APIs often provide health check endpoints which make it easy for an outside system to verify that the service is up and running. A healthcheck endpoint is a simple endpoint that can be called by a process manager to assertain whether the application is running correctly. In this blog post we'll be working with Kubernetes so we'll focus on the healthchecks supported by Kubernetes. 
+Deploying machine learning models in RESTful services is a common way to make the model available for use within a software system. In general, RESTful services are the most common type of service deployed, since they are simple to build, have wide compatibility, and have lots of tooling available for them. In order to monitor the availability of the service, RESTful APIs often provide health check endpoints which make it easy for an outside system to verify that the service is up and running. A health check endpoint is a simple endpoint that can be called by a process manager to ascertain whether the application is running correctly. In this blog post we'll be working with Kubernetes so we'll focus on the health checks supported by Kubernetes. 
 
-There are several types of healtchcheck endpoints supported by Kubernetes: startup, readiness, and liveness healtchecks. Startup checks are used to check if an application has started. If the container has a startup check configured on it, Kubernetes will wait until the application has finished starting up before moving on with the process of making the application available to clients. Startup checks are useful for applications that take a while to startup. Startup checks are only called during application startup, once an application has finished starting up the startup check is not called again.
+There are several types of health check endpoints supported by Kubernetes: startup, readiness, and liveness health checks. Startup checks are used to check if an application has started. If the container has a startup check configured on it, Kubernetes will wait until the application has finished starting up before moving on with the process of making the application available to clients. Startup checks are useful for applications that take a while to startup. Startup checks are only called during application startup, once an application has finished starting up the startup check is not called again.
 
 Readiness checks are used to check if a container is ready to start accepting requests. Once the application has finished starting up, Kubernetes uses the readiness check to make sure that the application is able to accept requests. Service readiness can change during the service lifecycle so the check is called continuously until the application is stopped.
 
 Liveness checks are used to restart a pod if the application is not responding. They are are the simplest type of check to implement in the application because they should always succeed if the server process is running. Liveness checks are useful to detect if the application is in an unsafe state, if the liveness check fails the process manager needs to restart the application to get it out of the unsafe state. Liveness checks are also called continuously while the application is running.
 
-In this blog post, we’ll be adding startup, readiness, and liveness checks to a RESTful model service that is hosting a machine learning model. We'll also build a model that requires healthchecks in order to be deployed correctly.
+In this blog post, we’ll be adding startup, readiness, and liveness checks to a RESTful model service that is hosting a machine learning model. We'll also build a model that requires health checks in order to be deployed correctly.
 
 ## Getting Data
 
@@ -652,7 +652,7 @@ data.shape
 
 The deepchecks package also found that the "EmploymentLength" variable contains string values that are similar to each other. For example, two levels found in the categorical variable are "1 year" and "< 1 year". This is a warning that we can ignore because the levels are correctly set.
 
-We're now getting closer to a dataset that we can use to train a  . We'll be using deepchecks to do train/test dataset checks and model checks later on.
+We're now getting closer to a dataset that we can use to train a model . We'll be using deepchecks to do train/test dataset checks and model checks later on.
 
 ### Training a Model
 
@@ -975,7 +975,7 @@ joblib.dump(model, "../credit_risk_model/model_files/model.joblib")
     -rw-r--r--  1 brian  staff  9452707 Jan 15 20:07 model.joblib
 
 
-The serialized model is 9.5 megabytes in size and took 295 milliseconds to write to disk. This is important to note because we will need to deserialize the model later in order to make predictions with it.
+The serialized model is 9.5 megabytes in size and took 226 milliseconds to write to disk. This is important to note because we will need to deserialize the model later in order to make predictions with it.
 
 In the process of training this model, we created a few files. To be able to use these files later, we'll package them up and save them in a location that can be accessed by the prediction code later. We'll be using a .zip file for this purpose.
 
@@ -1305,7 +1305,7 @@ model = CreditRiskModel()
     Wall time: 113 ms
 
 
-Notice that the model object took 1.48 seconds to be instantiated. This is because the model parameters take a lot of disk space and take a while to load from the hard drive. This is something that we'll need to deal with later.
+Notice that the model object took 113 milliseconds to be instantiated. This is because the model parameters take a lot of disk space and take a while to load from the hard drive. This is something that we'll need to deal with later.
 
 We'll use the CreditRiskModelInput instance to make a prediction like this:
 
@@ -1740,13 +1740,13 @@ startupProbe:
   
 This is not the complete YAML file, the full Deployment is defined in the ./kubernetes/model_service.yaml file.
 
-The model service container has options defined for each type of healthcheck. Each type of healthcheck is configured in the same way. The options are:
+The model service container has options defined for each type of health check. Each type of health check is configured in the same way. The options are:
 
-- initialDelaySeconds: This option tells Kubernetes how long to wait after container startup to start calling the healthcheck.
-- periodSeconds: This option tells how often to call the healthcheck endpoint.
-- timeoutSeconds: This option tell how long to wait for a response from the service before failing the healthcheck.
-- failureThreshold: This option tells how many times the healthcheck must fail before Kubernetes labels the container as unhealthy and restarts the pod.
-- successThreshold: This option tells how many times the healthcheck must succeed before Kubernetes labels the container as healthy.
+- initialDelaySeconds: This option tells Kubernetes how long to wait after container startup to start calling the health check.
+- periodSeconds: This option tells how often to call the health check endpoint.
+- timeoutSeconds: This option tell how long to wait for a response from the service before failing the health check.
+- failureThreshold: This option tells how many times the health check must fail before Kubernetes labels the container as unhealthy and restarts the pod.
+- successThreshold: This option tells how many times the health check must succeed before Kubernetes labels the container as healthy.
 
 We decided to have Kubernetes check 5 times before labelling the container as unhealthy, with a period of 5 seconds. This means that the service has 25 seconds for the model to finish loading. This is a value we know would work with this model, based on our timing measurements above.
 
@@ -1895,7 +1895,7 @@ We can send a request to the model service through the local endpoint like this:
 
     {"credit_risk":"safe"}
 
-The healthcheck endpoints of the model service are also available to clients:
+The health check endpoints of the model service are also available to clients:
 
 
 ```python
@@ -1949,4 +1949,4 @@ To shut down the Kubernetes cluster:
 
 In this blog post we showed how to deal with a common issue that arises when a large model is deployed. When the model parameters take a long time to load, the model service needs to make sure that no clients are depending on it to provide predictions until it is finished starting up. We accomplished this on the Kubernetes platform by adding health check endpoints to the model service and configuring Kubernetes to check on the endpoints. By doing this we are able to guarantee that the model service will only become available to clients once it has finished starting up. 
 
-In order to build the healthchecks, the model did not need to change at all. We were able to build the logic into the model service package, which means that the model prediction logic did not have to change to deal with this requirement. We were able to isolate a deployment concern from the model that we were trying to deploy. This also means that we can reuse the model to make predictions in other contexts and not have this extra logic being carried along with it.
+In order to build the health checks, the model did not need to change at all. We were able to build the logic into the model service package, which means that the model prediction logic did not have to change to deal with this requirement. We were able to isolate a deployment concern from the model that we were trying to deploy. This also means that we can reuse the model to make predictions in other contexts and not have this extra logic being carried along with it.
