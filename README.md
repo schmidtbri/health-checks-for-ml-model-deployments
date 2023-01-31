@@ -2,7 +2,7 @@
 
 Health checks for ML model deployments.
 
-This code is used in this [blog post]().
+This code is used in this [blog post](https://www.tekhnoal.com/health-checks-for-ml-model-deployments.html).
 
 ## Requirements
 
